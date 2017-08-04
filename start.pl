@@ -12,7 +12,11 @@ my $vapi = VirtualAPI->new(
     methods => [
         {
             route => 'foobar',
-            header => 'Content-type: application/foobar',
+            header => [
+                -type => 'application/foobar',
+                -content => '{"json":"content"}',
+                -FooBar => 'Yeah!',
+            ],
             start_html => "FooBar!",
             h1 => "FooBar!",
             body => 'Foo my Bar!',

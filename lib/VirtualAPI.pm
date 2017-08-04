@@ -38,8 +38,16 @@ sub run {
                 my $cgi = shift;
                 return if ! ref $cgi;
 
+                my @header = ();
+                if (ref $method->{'header'} eq 'ARRAY') {
+                    @header = @{$method->{'header'}}
+                }
+                else {
+                    push $method->{'header'}, @header;
+                }
+
                 print(
-                    $cgi->header($method->{'header'}),
+                    $cgi->header(@header),
                     $cgi->start_html($method->{'start_html'}),
                     $cgi->h1($method->{'h1'}),
                     $cgi->body($method->{'body'}),

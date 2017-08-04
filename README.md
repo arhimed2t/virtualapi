@@ -1,7 +1,6 @@
-#!/usr/bin/env perl
+## Simple API mocker based on HTTP::Server::Simple
 
-use strict;
-use warnings;
+### Create API route
 
 use lib 'lib';
 use VirtualAPI;
@@ -13,8 +12,8 @@ my $vapi = VirtualAPI->new(
         {
             route => 'foobar',
             header => [
-                -type => 'text/html',
-                -content => '{"some":"json"}',
+                -type => 'application/foobar',
+                -content => '{"json":"content"}',
                 -FooBar => 'Yeah!',
             ],
             start_html => "FooBar!",
@@ -27,8 +26,10 @@ my $vapi = VirtualAPI->new(
 
 $vapi->run();
 
-__DATA__
+### Usage
 
-# Usage:
-curl -X POST http://localhost:9090/foobar
+./start
 
+curl http://localhost:9090/foobar
+
+perl test_cli.pl

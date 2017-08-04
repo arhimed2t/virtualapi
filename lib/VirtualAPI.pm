@@ -40,7 +40,7 @@ sub run {
 
                 my @header = ();
                 if (ref $method->{'header'} eq 'ARRAY') {
-                    @header = @{$method->{'header'}}
+                    @header = @{$method->{'header'}};
                 }
                 else {
                     push $method->{'header'}, @header;

@@ -2,6 +2,7 @@
 
 ### Create API route
 
+``` perl
 use lib 'lib';
 use VirtualAPI;
 
@@ -12,8 +13,8 @@ my $vapi = VirtualAPI->new(
         {
             route => 'foobar',
             header => [
-                -type => 'application/foobar',
-                -content => '{"json":"content"}',
+                -type => 'text/html',
+                -content => '{"some":"json"}',
                 -FooBar => 'Yeah!',
             ],
             start_html => "FooBar!",
@@ -25,11 +26,12 @@ my $vapi = VirtualAPI->new(
 );
 
 $vapi->run();
+```
 
 ### Usage
 
 ./start
 
 curl http://localhost:9090/foobar
-
+or
 perl test_cli.pl

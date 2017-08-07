@@ -28,30 +28,30 @@ sub run {
     my $webserver = MyWebServer->new($port);
 
     # Handle routes and methods
-    if (ref $self->{'methods'} eq 'ARRAY') {
+    if (ref $self->{'urls'} eq 'ARRAY') {
         no strict 'refs';
-        for my $method (@{$self->{'methods'}}) {
-            if (ref $method ne 'HASH') {
+        for my $url (@{$self->{'urls'}}) {
+            if (ref $url ne 'HASH') {
                 die "Wrong VirtualAPI method format!";
             }
-            *{'MyWebServer::' . $method->{'route'}} = sub {
+            *{'MyWebServer::' . $url->{'route'}} = sub {
                 my $cgi = shift;
                 return if ! ref $cgi;
 
                 my @header = ();
-                if (ref $method->{'header'} eq 'ARRAY') {
-                    @header = @{$method->{'header'}};
+                if (ref $url->{'header'} eq 'ARRAY') {
+                    @header = @{$url->{'header'}};
                 }
                 else {
-                    push $method->{'header'}, @header;
+                    push $url->{'header'}, @header;
                 }
 
                 print(
                     $cgi->header(@header),
-                    $cgi->start_html($method->{'start_html'}),
-                    $cgi->h1($method->{'h1'}),
-                    $cgi->body($method->{'body'}),
-                    $cgi->end_html($method->{'end_html'}),
+                    $cgi->start_html($url->{'start_html'}),
+                    $cgi->h1($url->{'h1'}),
+                    $cgi->body($url->{'body'}),
+                    $cgi->end_html($url->{'end_html'}),
                 );
             };
         }

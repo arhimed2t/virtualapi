@@ -6,10 +6,44 @@ use warnings;
 use lib 'lib';
 use VirtualAPI;
 
+# Get config from json files
+my @urls = ();
+if (scalar @ARGV) {
+    my $json;
+    eval {
+        require JSON;
+        $json = JSON->new();
+    };
+    my @files;
+    if ($json && !$@) {
+        local $/ = undef;
+        @files = grep {
+            my $file = $_;
+            my $fh;
+            my @content;
+            if (open $fh => "<$file") {
+                eval { @content = $json->decode(<$fh>); };
+            }
+            scalar @content
+        } @ARGV;
+
+        @urls = map {
+            my $file = $_;
+            my $content;
+            if (open my $fh => "<$file") {
+                binmode $fh;
+                eval { $content = $json->decode(<$fh>); };
+            }
+            $content
+        } @files;
+    }
+}
+
 my $vapi = VirtualAPI->new(
     port => 9090,
     background => 0,
-    methods => [
+    urls => [
+        @urls, # Urls from ARGV
         {
             route => 'foobar',
             header => [
@@ -31,4 +65,3 @@ __DATA__
 
 # Usage:
 curl -X POST http://localhost:9090/foobar
-

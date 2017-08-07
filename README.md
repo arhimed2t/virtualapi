@@ -9,7 +9,8 @@ use VirtualAPI;
 my $vapi = VirtualAPI->new(
     port => 9090,
     background => 0,
-    methods => [
+    urls => [
+        @urls, # Urls from ARGV
         {
             route => 'foobar',
             header => [
@@ -34,4 +35,4 @@ $vapi->run();
 
 curl http://localhost:9090/foobar
 or
-perl test_cli.pl
+perl test_cli.pl test.json test.nojson

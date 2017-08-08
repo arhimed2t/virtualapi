@@ -21,7 +21,7 @@ push @urls, {
     } (1) # Just counter
 };
 
-my $vapi = VirtualAPI->new(
+my $vapi = VirtualAPI->_new(
     port => 9090,
     background => 0,
     urls => [
@@ -41,13 +41,15 @@ my $vapi = VirtualAPI->new(
     ],
 );
 
-$vapi->run();
+$vapi->_run();
 ```
 
 ### Usage
 
-./start
+./start test_foo_bar.json test.json test.nojson
 
 curl http://localhost:9090/foobar
+
 or
-perl test_cli.pl test_foo_bar.json test.json test.nojson
+
+perl test_cli.pl

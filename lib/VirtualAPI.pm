@@ -6,9 +6,11 @@ use Data::Dumper;
 use HTTP::Server::Simple::CGI;
 use base qw(HTTP::Server::Simple::CGI);
 
+use constant SERVER => 'HTTP::Server::Simple';
+
 $Data::Dumper::Terse = 1;
 
-sub _new {
+sub new {
     my ($class, %params) = @_;
 
     my $self = {};
@@ -19,15 +21,15 @@ sub _new {
     return $self;
 }
 
-sub _run {
+sub run {
     my $self = shift;
 
     my $port = $self->{'port'} || 8080;
     my $background = $self->{'background'};
 
+    no strict 'refs';
     # Handle routes and methods
     if (ref $self->{'urls'} eq 'ARRAY') {
-        no strict 'refs';
         for my $url (@{$self->{'urls'}}) {
             if (ref $url ne 'HASH') {
                 die "Wrong VirtualAPI method format!";
@@ -58,13 +60,15 @@ sub _run {
     my @urls = map { $_->{'route'} } @{$self->{'urls'}};
     print "Available routes are:\n", Dumper \@urls;
 
-    my $server = __PACKAGE__->new($port);
+    # Copy subs from SUPER class to run server
+    *{__PACKAGE__ . "::_$_"} = *{SERVER . "::$_"} for grep { defined &{SERVER . "::$_"} } keys %{SERVER . "::"};
+    my $server = __PACKAGE__->_new($port);
     if ($background) {
-        my $pid = $server->background();
+        my $pid = $server->_background();
         print "Use 'kill $pid' to stop server.\n";
     }
     else {
-        $server->run();
+        $server->_run();
     }
 }
 

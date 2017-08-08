@@ -1,1 +1,1 @@
-{"route":"get_domains","header":["-type","text/html","domains",""]}
+{"route":"get_domains","header":["-type","text/html","domains","list"]}

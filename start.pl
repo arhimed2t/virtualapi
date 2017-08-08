@@ -56,7 +56,7 @@ push @urls, {
 };
 ####
 
-my $vapi = VirtualAPI->_new(
+my $vapi = VirtualAPI->new(
     port => 9090,
     background => 0,
     urls => [
@@ -76,7 +76,7 @@ my $vapi = VirtualAPI->_new(
     ],
 );
 
-$vapi->_run();
+$vapi->run();
 
 __DATA__
 

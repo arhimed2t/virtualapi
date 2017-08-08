@@ -39,6 +39,25 @@ if (scalar @ARGV) {
     }
 }
 
+### Map some dynamically changed structure placed to @urls
+
+push @urls, {
+    map {
+        my @chars = ("A".."Z", "a".."z");
+        my $string;
+        $string .= $chars[rand @chars] for 1 .. 8;
+        (
+            route => $string,
+            header => [
+                -type => 'text/html',
+                -content => $string,
+            ]
+        )
+    } (1) # Just counter
+};
+#
+####
+
 my $vapi = VirtualAPI->new(
     port => 9090,
     background => 0,

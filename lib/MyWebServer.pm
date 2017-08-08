@@ -11,7 +11,11 @@ sub handle_request {
 
     my $path = $cgi->path_info();
     $path =~ s/\///;
-    my $handler = \&{$path};
+    no strict 'refs';
+    my $handler;
+    if (*{__PACKAGE__ . '::' . $path}{CODE}) { # Handle url only if specified sub was generated in VirtualAPI
+        $handler = \&{$path};
+    }
 
     if (ref $handler eq 'CODE') {
         print "HTTP/1.0 200 OK\r\n";

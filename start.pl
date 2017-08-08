@@ -6,61 +6,26 @@ use warnings;
 use lib 'lib';
 use VirtualAPI;
 
-# Get config from json files
-my @urls = ();
-if (scalar @ARGV) {
-    my $json;
-    eval {
-        require JSON;
-        $json = JSON->new();
-    };
-    my @files;
-    if ($json && !$@) {
-        local $/ = undef;
-        @files = grep {
-            my $file = $_;
-            my $fh;
-            my @content;
-            if (open $fh => "<$file") {
-                eval { @content = $json->decode(<$fh>); };
-            }
-            scalar @content
-        } @ARGV;
-
-        @urls = map {
-            my $file = $_;
-            my $content;
-            if (open my $fh => "<$file") {
-                binmode $fh;
-                eval { $content = $json->decode(<$fh>); };
-            }
-            $content
-        } @files;
+#### Map some structure and use them in constructor
+my @urls = map {
+    my @chars = ("A".."Z", "a".."z");
+    my $string;
+    $string .= $chars[rand @chars] for 1 .. 8;
+    {
+        route => $string,
+        header => [
+            -type => 'text/html',
+            -content => $string,
+        ]
     }
-}
-
-#### Map some dynamically changed structure placed to @urls
-push @urls, {
-    map {
-        my @chars = ("A".."Z", "a".."z");
-        my $string;
-        $string .= $chars[rand @chars] for 1 .. 8;
-        (
-            route => $string,
-            header => [
-                -type => 'text/html',
-                -content => $string,
-            ]
-        )
-    } (1) # Just counter
-};
-####
+} (1); # Just counter
+#### Also it can be placed to json files and be given from @ARGV
 
 my $vapi = VirtualAPI->new(
     port => 9090,
     background => 0,
     urls => [
-        @urls, # Urls from ARGV
+        @urls, # Generated urls
         {
             route => 'foobar',
             header => [

@@ -26,6 +26,10 @@ sub run {
     my $port = $self->{'port'} || 8080;
 
     no strict 'refs';
+    if (scalar @ARGV) {
+        $self->argv_urls();
+        push @{$self->{'urls'}}, @{$self->{'argv'}};
+    }
     # Handle routes and methods
     if (ref $self->{'urls'} eq 'ARRAY') {
         for my $url (@{$self->{'urls'}}) {
@@ -95,6 +99,40 @@ sub handle_request {
             $cgi->h1('Not found'),
             $cgi->end_html(),
         );
+    }
+}
+
+sub argv_urls {
+    my $self = shift;
+
+    my $json;
+    eval {
+        require JSON; $json = JSON->new();
+    };
+
+    if ($json && !$@) {
+        local $/ = undef;
+        my @files = grep {
+            my $file = $_;
+            my $fh;
+            my @content;
+            if (open $fh => "<$file") {
+                eval { @content = $json->decode(<$fh>); };
+            }
+            scalar @content
+        } @ARGV;
+
+        my @urls = map {
+            my $file = $_;
+            my $content;
+            if (open my $fh => "<$file") {
+                binmode $fh;
+                eval { $content = $json->decode(<$fh>); };
+            }
+            $content
+        } @files;
+
+        $self->{'argv'} = \@urls;
     }
 }
 

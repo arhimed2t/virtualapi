@@ -39,8 +39,7 @@ if (scalar @ARGV) {
     }
 }
 
-### Map some dynamically changed structure placed to @urls
-
+#### Map some dynamically changed structure placed to @urls
 push @urls, {
     map {
         my @chars = ("A".."Z", "a".."z");
@@ -55,7 +54,6 @@ push @urls, {
         )
     } (1) # Just counter
 };
-#
 ####
 
 my $vapi = VirtualAPI->new(

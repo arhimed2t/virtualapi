@@ -6,6 +6,21 @@
 use lib 'lib';
 use VirtualAPI;
 
+push @urls, {
+    map {
+        my @chars = ("A".."Z", "a".."z");
+        my $string;
+        $string .= $chars[rand @chars] for 1 .. 8;
+        (
+            route => $string,
+            header => [
+                -type => 'text/html',
+                -content => $string,
+            ]
+        )
+    } (1) # Just counter
+};
+
 my $vapi = VirtualAPI->new(
     port => 9090,
     background => 0,

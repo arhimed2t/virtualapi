@@ -35,4 +35,4 @@ $vapi->run();
 
 curl http://localhost:9090/foobar
 or
-perl test_cli.pl test.json test.nojson
+perl test_cli.pl foo_bar.json test.json test.nojson

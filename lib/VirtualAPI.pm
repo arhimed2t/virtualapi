@@ -25,38 +25,40 @@ sub run {
 
     my $port = $self->{'port'} || 8080;
 
+    if (ref $self->{'urls'} ne 'ARRAY' || !scalar @{$self->{'urls'}}) {
+        die "No urls given, nothing to do.";
+    }
+
     no strict 'refs';
     if (scalar @ARGV) {
         $self->argv_urls();
         push @{$self->{'urls'}}, @{$self->{'argv'}} if (ref $self->{'argv'} eq 'ARRAY');
     }
-    # Handle routes and methods
-    if (ref $self->{'urls'} eq 'ARRAY') {
-        for my $url (@{$self->{'urls'}}) {
-            if (ref $url ne 'HASH') {
-                die "Wrong VirtualAPI method format! See README.";
-            }
-            *{__PACKAGE__ . '::' . $url->{'route'}} = sub {
-                my $cgi = shift;
-                return if ! ref $cgi;
-
-                my @header = ();
-                if (ref $url->{'header'} eq 'ARRAY') {
-                    @header = @{$url->{'header'}};
-                }
-                else {
-                    push @header, $url->{'header'};
-                }
-
-                print(
-                    $cgi->header(@header),
-                    $cgi->start_html($url->{'start_html'}),
-                    $cgi->h1($url->{'h1'}),
-                    $cgi->body($url->{'body'}),
-                    $cgi->end_html($url->{'end_html'}),
-                );
-            };
+    # Handle routes
+    for my $url (@{$self->{'urls'}}) {
+        if (ref $url ne 'HASH') {
+            die "Wrong VirtualAPI url structure! See README.";
         }
+        *{__PACKAGE__ . '::' . $url->{'route'}} = sub {
+            my $cgi = shift;
+            return if ! ref $cgi;
+
+            my @header = ();
+            if (ref $url->{'header'} eq 'ARRAY') {
+                @header = @{$url->{'header'}};
+            }
+            else {
+                push @header, $url->{'header'};
+            }
+
+            print(
+                $cgi->header(@header),
+                $cgi->start_html($url->{'start_html'}),
+                $cgi->h1($url->{'h1'}),
+                $cgi->body($url->{'body'}),
+                $cgi->end_html($url->{'end_html'}),
+            );
+        };
     }
 
     my @urls = map { $_->{'route'} } @{$self->{'urls'}};

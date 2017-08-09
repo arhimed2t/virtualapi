@@ -28,7 +28,7 @@ sub run {
     no strict 'refs';
     if (scalar @ARGV) {
         $self->argv_urls();
-        push @{$self->{'urls'}}, @{$self->{'argv'}};
+        push @{$self->{'urls'}}, @{$self->{'argv'}} if (ref $self->{'argv'} eq 'ARRAY');
     }
     # Handle routes and methods
     if (ref $self->{'urls'} eq 'ARRAY') {
@@ -63,7 +63,8 @@ sub run {
     print "Available routes are:\n", Dumper \@urls;
 
     # Copy subs from SUPER class to run as __PACKAGE__
-    *{__PACKAGE__ . "::_$_"} = *{SERVER . "::$_"} for grep { defined &{SERVER . "::$_"} } keys %{SERVER . "::"};
+    my @subs = grep { defined &{SERVER . "::$_"} } keys %{SERVER . "::"};
+    *{__PACKAGE__ . "::_$_"} = *{SERVER . "::$_"} for @subs;
     my $server = __PACKAGE__->_new($port);
     if ($self->{'background'}) {
         my $pid = $server->_background();
@@ -105,12 +106,15 @@ sub handle_request {
 sub argv_urls {
     my $self = shift;
 
+    # JSON is not mandatory, but required for gettings urls from json files
     my $json;
     eval {
         require JSON; $json = JSON->new();
     };
 
-    if ($json && !$@) {
+    return if ($@ || !$json);
+
+    do {
         local $/ = undef;
         my @files = grep {
             my $file = $_;
@@ -133,7 +137,7 @@ sub argv_urls {
         } @files;
 
         $self->{'argv'} = \@urls;
-    }
+    } while (0);
 }
 
 1;

@@ -118,12 +118,11 @@ sub argv_urls {
         local $/ = undef;
         my @files = grep {
             my $file = $_;
-            my $fh;
             my @content;
-            if (open $fh => "<$file") {
+            if (open my $fh => "<$file") {
                 eval { @content = $json->decode(<$fh>); };
             }
-            scalar @content
+            scalar @content # File is not empty
         } @ARGV;
 
         my @urls = map {

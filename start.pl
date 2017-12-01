@@ -30,13 +30,31 @@ my $vapi = VirtualAPI->new(
             route => 'foobar',
             header => [
                 -type => 'text/html',
-                -content => '{"some":"json"}',
+                -content => 'Foo',
                 -FooBar => 'Yeah!',
             ],
             start_html => "FooBar!",
             h1 => "FooBar!",
             body => 'Foo my Bar!',
             end_html => 'End',
+        },
+        {
+            route => 'json',
+            header => [
+                -type => 'application/json',
+                -content => 'json',
+            ],
+            raw_content => '{"some":"json"}',
+        },
+        {
+            route => 'callback',
+            header => [
+                -type => 'text/plain',
+            ],
+            cb => sub {
+                print "Your callback!\n";
+            },
+            raw_content => 'YEAH!',
         },
     ],
 );
@@ -47,3 +65,4 @@ __DATA__
 
 # Usage:
 curl -X POST http://localhost:9090/foobar
+curl http://localhost:9090/json

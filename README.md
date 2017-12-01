@@ -30,13 +30,21 @@ my $vapi = VirtualAPI->new(
             route => 'foobar',
             header => [
                 -type => 'text/html',
-                -content => '{"some":"json"}',
+                -content => 'Foo',
                 -FooBar => 'Yeah!',
             ],
             start_html => "FooBar!",
             h1 => "FooBar!",
             body => 'Foo my Bar!',
             end_html => 'End',
+        },
+        {
+            route => 'json',
+            header => [
+                -type => 'application/json',
+                -content => 'json',
+            ],
+            raw_content => '{"some":"json"}',
         },
     ],
 );
@@ -46,10 +54,10 @@ $vapi->run();
 
 ### Usage
 
-./start test_foo_bar.json test.json test.nojson
+./start eg/test_foo_bar.json eg/test.json eg/test.nojson
 
 curl http://localhost:9090/foobar
 
 or
 
-perl test_cli.pl
+perl test_req.pl

@@ -52,9 +52,10 @@ my $vapi = VirtualAPI->new(
                 -type => 'text/plain',
             ],
             cb => sub {
-                print "Your callback!\n";
+                my $cgi = shift;
+                return if ! ref $cgi;
+                print $cgi->header(), "Your callback!\n";
             },
-            raw_content => 'YEAH!',
         },
     ],
 );

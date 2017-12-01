@@ -46,6 +46,17 @@ my $vapi = VirtualAPI->new(
             ],
             raw_content => '{"some":"json"}',
         },
+        {
+            route => 'callback',
+            header => [
+                -type => 'text/plain',
+            ],
+            cb => sub {
+                my $cgi = shift;
+                return if ! ref $cgi;
+                print $cgi->header(), "Your callback!\n";
+            },
+        },
     ],
 );
 

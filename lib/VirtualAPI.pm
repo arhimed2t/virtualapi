@@ -61,7 +61,14 @@ sub run {
             my $end_html = $cgi->end_html($url->{'end_html'}) if $url->{'end_html'};
             my $raw_content = $url->{'raw_content'} if $url->{'raw_content'};
 
-            my @resp = grep $_, (
+            # Header is mandatory
+            my @resp = $cgi->header(@header);
+
+            if ($url->{'send_back_request'}) {
+                push @resp, "$req_method\n", Dumper \%req_headers;
+            }
+
+            push @resp, grep $_, (
                 $start_html,
                 $h1,
                 $body,
@@ -69,8 +76,7 @@ sub run {
                 $raw_content,
             );
 
-            # Header is mandatory
-            print $cgi->header(@header), "$req_method\n", Dumper \%req_headers, @resp;
+            print @resp;
         };
     }
 
